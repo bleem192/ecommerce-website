@@ -1,0 +1,64 @@
+version: '1.0'
+name: ecommerce-deployment
+
+env:
+  ALIYUN_ECS_IP: '${ALIYUN_ECS_IP}'
+  APP_DIR: '/home/ecommerce'
+
+stages:
+  - name: build
+    jobs:
+      - name: maven-build
+        image: maven:3.8.5-openjdk-8
+        commands:
+          - cd ecommerce
+          - mvn clean package -DskipTests
+          - ls -la target/
+
+  - name: docker-build
+    jobs:
+      - name: build-image
+        image: docker:latest
+        services:
+          - name: docker:dind
+        commands:
+          - cd ecommerce
+          - docker build -t ecommerce-app:latest .
+          - docker save ecommerce-app:latest > ecommerce-app.tar
+
+  - name: deploy
+    jobs:
+      - name: deploy-to-ecs
+        image: alpine:latest
+        commands:
+          - apk add --no-cache openssh-client scp
+          
+          # 配置SSH
+          - mkdir -p ~/.ssh
+          - echo "${ALIYUN_ECS_SSH_KEY}" > ~/.ssh/id_rsa
+          - chmod 600 ~/.ssh/id_rsa
+          - ssh-keyscan -H ${ALIYUN_ECS_IP} >> ~/.ssh/known_hosts
+          
+          # 创建应用目录
+          - ssh root@${ALIYUN_ECS_IP} "mkdir -p ${APP_DIR}"
+          
+          # 上传Docker镜像和配置文件
+          - scp ecommerce/ecommerce-app.tar root@${ALIYUN_ECS_IP}:${APP_DIR}/
+          - scp ecommerce/docker-compose.yml root@${ALIYUN_ECS_IP}:${APP_DIR}/
+          
+          # 在ECS上部署
+          - ssh root@${ALIYUN_ECS_IP} "cd ${APP_DIR} && docker load < ecommerce-app.tar"
+          - ssh root@${ALIYUN_ECS_IP} "cd ${APP_DIR} && docker-compose up -d"
+
+# 配置产物上传
+artifacts:
+  upload:
+    - name: app-image
+      path: ecommerce/ecommerce-app.tar
+
+# 配置变量管理
+variables:
+  - name: ALIYUN_ECS_IP
+    type: secret
+  - name: ALIYUN_ECS_SSH_KEY
+    type: secret

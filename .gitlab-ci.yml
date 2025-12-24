@@ -1,0 +1,56 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+# 构建阶段
+build:
+  stage: build
+  image: maven:3.8.5-openjdk-8
+  script:
+    - mvn clean package -DskipTests
+    - docker build -t ecommerce-app .
+  artifacts:
+    paths:
+      - target/ecommerce-1.0.0.jar
+  tags:
+    - docker
+
+# 测试阶段
+test:
+  stage: test
+  image: maven:3.8.5-openjdk-8
+  script:
+    - mvn test
+  tags:
+    - docker
+
+# 部署阶段
+deploy:
+  stage: deploy
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "Connecting to Aliyun ECS..."
+    - apk add openssh-client
+    - mkdir -p ~/.ssh
+    - echo "${ALIYUN_ECS_SSH_KEY}" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H ${ALIYUN_ECS_IP} >> ~/.ssh/known_hosts
+    
+    # 上传Docker镜像和配置文件
+    - docker save ecommerce-app | ssh root@${ALIYUN_ECS_IP} docker load
+    - scp docker-compose.yml root@${ALIYUN_ECS_IP}:/home/ecommerce/
+    
+    # 启动服务
+    - ssh root@${ALIYUN_ECS_IP} "cd /home/ecommerce && docker-compose up -d"
+  only:
+    - main
+  tags:
+    - docker
