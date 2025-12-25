@@ -67,7 +67,11 @@ spring.datasource.password=your-password
 使用Maven构建并运行项目：
 
 ```bash
+# 使用Maven运行
 mvn spring-boot:run
+
+# 或使用Docker运行
+docker compose up --build -d
 ```
 
 ### 4. 访问网站
