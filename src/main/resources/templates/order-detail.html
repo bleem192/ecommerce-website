@@ -32,6 +32,7 @@
                     <div class="col-md-6">
                         <p><strong>订单号：</strong><span th:text="${order.orderNumber}"></span></p>
                         <p><strong>下单时间：</strong><span th:text="${order.createdAt}"></span></p>
+                        <p><strong>联系邮箱：</strong><span th:text="${order.email}"></span></p>
                         <p><strong>订单状态：</strong>
                             <span th:if="${order.status == '待付款'}" class="badge bg-warning">待付款</span>
                             <span th:if="${order.status == '已付款'}" class="badge bg-primary">已付款</span>
@@ -76,8 +77,15 @@
             </div>
         </div>
 
-        <!-- 返回按钮 -->
+        <!-- 操作按钮 -->
         <div class="mt-4">
+            <!-- 确认收货按钮（仅当订单状态为已发货时显示） -->
+            <a th:if="${order.status == '已发货'}" th:href="@{/orders/confirm/{orderId}(orderId=${order.id})}" class="btn btn-success me-2">确认收货</a>
+            <!-- 确认收货成功提示 -->
+            <div th:if="${param.confirmed}" class="alert alert-success d-inline-block">
+                确认收货成功！
+            </div>
+            <!-- 返回按钮 -->
             <a href="/orders" class="btn btn-secondary">返回订单列表</a>
         </div>
     </div>

@@ -25,10 +25,8 @@ public class SecurityConfig {
                 .csrf().disable()
                 // 配置请求权限
                 .authorizeHttpRequests(auth -> auth
-                        // 登录页、注册页、静态资源允许匿名访问
-                        .antMatchers("/login", "/register", "/css/**", "/js/**").permitAll()
-                        // 管理员路径需要ADMIN角色
-                        .antMatchers("/admin/**").hasRole("ADMIN")
+                        // 登录页、静态资源允许匿名访问
+                        .antMatchers("/login", "/css/**", "/js/**").permitAll()
                         // 其他所有请求需要登录
                         .anyRequest().authenticated()
                 )

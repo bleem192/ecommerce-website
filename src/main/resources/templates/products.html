@@ -13,6 +13,7 @@
             <div class="navbar-nav">
                 <a class="nav-link active" href="/products">商品列表</a>
                 <a class="nav-link" href="/cart">我的购物车</a>
+                <a class="nav-link" href="/orders">我的订单</a>
                 
                 <!-- 管理员专用菜单 -->
                 <div sec:authorize="hasRole('ADMIN')" class="nav-item dropdown">
@@ -41,24 +42,37 @@
 
     <!-- 商品列表 -->
     <div class="container mt-4">
-        <h2>商品列表</h2>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>商品列表</h2>
+            <!-- 搜索框 -->
+            <form th:action="@{/products}" method="get" class="d-flex">
+                <input type="text" name="keyword" class="form-control me-2" placeholder="搜索商品..." th:value="${keyword}">
+                <button type="submit" class="btn btn-primary">搜索</button>
+            </form>
+        </div>
         <div class="row mt-3">
             <!-- 循环遍历商品 -->
             <div th:each="product : ${products}" class="col-md-4 mb-4">
                 <div class="card h-100">
-                    <img th:src="${product.imageUrl}" class="card-img-top" alt="${product.name}">
+                    <a th:href="@{/product/{productId}(productId=${product.id})}" class="card-img-top">
+                        <img th:src="${product.imageUrl}" class="img-fluid" alt="${product.name}">
+                    </a>
                     <div class="card-body">
-                        <h5 class="card-title" th:text="${product.name}">商品名称</h5>
+                        <h5 class="card-title">
+                            <a th:href="@{/product/{productId}(productId=${product.id})}" th:text="${product.name}">商品名称</a>
+                        </h5>
                         <p class="card-text" th:text="${product.description}">商品描述</p>
                         <p class="card-text text-danger fw-bold" th:text="'¥' + ${product.price}">¥0.00</p>
-                        <!-- 加入购物车表单 -->
-                        <form th:action="@{/cart/add}" method="post">
+                        <!-- 快速加入购物车 -->
+                        <form th:action="@{/cart/add}" method="post" class="mt-3">
                             <input type="hidden" name="productId" th:value="${product.id}">
-                            <div class="input-group mb-3">
-                                <input type="number" name="quantity" class="form-control" value="1" min="1" max="10">
+                            <div class="input-group">
+                                <input type="number" name="quantity" class="form-control" value="1" min="1" max="10" style="width: 80px;">
                                 <button type="submit" class="btn btn-primary">加入购物车</button>
                             </div>
                         </form>
+                        <!-- 查看详情按钮 -->
+                        <a th:href="@{/product/{productId}(productId=${product.id})}" class="btn btn-outline-primary mt-2 w-100">查看详情</a>
                     </div>
                 </div>
             </div>

@@ -2,6 +2,7 @@ package com.example.ecommerce.service;
 
 import com.example.ecommerce.entity.*;
 import com.example.ecommerce.repository.OrderRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +25,7 @@ public class OrderService {
 
     // 创建订单（从购物车生成）
     @Transactional
-    public Order createOrder(String username) {
+    public Order createOrder(String username, String email) {
         User user = userService.getCurrentUser(username);
         List<CartItem> cartItems = cartService.getCartItems(username);
 
@@ -36,9 +37,10 @@ public class OrderService {
         Order order = new Order();
         order.setOrderNumber(generateOrderNumber());
         order.setUser(user);
-        order.setStatus("待付款");
+        order.setStatus("已付款"); // 修改状态为已付款，因为我们简化了付款流程
         order.setCreatedAt(LocalDateTime.now());
         order.setUpdatedAt(LocalDateTime.now());
+        order.setEmail(email); // 设置用户邮箱
 
         // 计算总价并创建订单项
         BigDecimal totalPrice = BigDecimal.ZERO;
@@ -57,6 +59,9 @@ public class OrderService {
         // 保存订单并清空购物车
         orderRepository.save(order);
         cartService.clearCart(username);
+
+        // 移除实际发送邮件的代码，仅保留邮箱输入功能
+        System.out.println("订单已创建，邮箱：" + email + "，订单号：" + order.getOrderNumber());
 
         return order;
     }

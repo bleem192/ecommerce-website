@@ -2,10 +2,16 @@ package com.example.ecommerce.controller;
 
 import com.example.ecommerce.service.CartService;
 import com.example.ecommerce.service.OrderService;
+import com.example.ecommerce.service.UserActivityLogService;
+import com.example.ecommerce.service.UserService;
+import com.example.ecommerce.entity.Order;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import javax.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("/cart")
@@ -46,11 +52,19 @@ public class CartController {
         return "redirect:/cart"; // 跳转回购物车页
     }
 
-    // 结算购物车
+    // 结算购物车 - 跳转到填写邮箱页面
     @GetMapping("/checkout")
-    public String checkout(Authentication authentication) {
+    public String checkout(Model model, Authentication authentication) {
         String username = authentication.getName();
-        orderService.createOrder(username); // 创建订单
-        return "redirect:/orders?checkout=success"; // 结算成功跳转订单列表
+        model.addAttribute("username", username);
+        return "checkout-email"; // 跳转到填写邮箱页面
+    }
+
+    // 提交邮箱并完成订单
+    @PostMapping("/checkout")
+    public String processCheckout(@RequestParam String email, Authentication authentication) {
+        String username = authentication.getName();
+        orderService.createOrder(username, email); // 创建订单并传递邮箱
+        return "redirect:/orders?checkout=success&email=" + email;
     }
 }

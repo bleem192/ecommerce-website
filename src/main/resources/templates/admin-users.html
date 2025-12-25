@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>客户管理 - 管理员</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .search-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .search-container input {
+            padding: 8px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .search-container button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .users-table th, .users-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .users-table th {
+            background-color: #f2f2f2;
+        }
+        .users-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .action-links a {
+            margin-right: 10px;
+            padding: 5px 10px;
+            border-radius: 3px;
+            color: white;
+            text-decoration: none;
+        }
+        .view-link {
+            background-color: #2196F3;
+        }
+        .edit-link {
+            background-color: #FFC107;
+        }
+        .delete-link {
+            background-color: #F44336;
+        }
+        .message {
+            color: green;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>客户管理</h1>
+    
+    <div th:if="${param.updateSuccess}" class="message">
+        用户信息更新成功！
+    </div>
+    
+    <div th:if="${param.deleteSuccess}" class="message">
+        用户删除成功！
+    </div>
+    
+    <div class="search-container">
+        <form th:action="@{/admin/users/search}" method="get">
+            <input type="text" name="keyword" placeholder="搜索用户名或邮箱" th:value="${keyword}">
+            <button type="submit">搜索</button>
+        </form>
+    </div>
+    
+    <table class="users-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>用户名</th>
+                <th>姓名</th>
+                <th>邮箱</th>
+                <th>电话</th>
+                <th>角色</th>
+                <th>注册时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.username}"></td>
+                <td th:text="${user.fullName}"></td>
+                <td th:text="${user.email}"></td>
+                <td th:text="${user.phone}"></td>
+                <td th:text="${user.role}"></td>
+                <td th:text="${#dates.format(user.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td class="action-links">
+                    <a th:href="@{/admin/users/{id}(id=${user.id})}" class="view-link">查看</a>
+                    <a th:href="@{/admin/users/{id}/edit(id=${user.id})}" class="edit-link">编辑</a>
+                    <form th:action="@{/admin/users/{id}/delete(id=${user.id})}" method="post" style="display: inline;">
+                        <button type="submit" class="delete-link" onclick="return confirm('确定要删除该用户吗？');">删除</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <a href="/admin" class="back-link">返回管理首页</a>
+</body>
+</html>

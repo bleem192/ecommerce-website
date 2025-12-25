@@ -33,4 +33,12 @@ public class ProductService {
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
+
+    // 搜索商品
+    public List<Product> searchProducts(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return getAllProducts(); // 如果关键词为空，返回所有商品
+        }
+        return productRepository.searchProducts(keyword);
+    }
 }

@@ -35,4 +35,8 @@ public class Order {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+    
+    // 用户邮箱（用于订单确认）
+    @Column(nullable = false)
+    private String email;
 }

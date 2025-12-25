@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户详情 - 管理员</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .user-info {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .info-group {
+            margin-bottom: 15px;
+        }
+        .info-label {
+            font-weight: bold;
+            display: inline-block;
+            width: 120px;
+        }
+        .action-links {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .action-links a {
+            margin: 0 10px;
+            padding: 10px 15px;
+            border-radius: 3px;
+            color: white;
+            text-decoration: none;
+        }
+        .edit-link {
+            background-color: #FFC107;
+        }
+        .back-link {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>用户详情</h1>
+    
+    <div class="user-info">
+        <div class="info-group">
+            <span class="info-label">用户ID:</span>
+            <span th:text="${user.id}"></span>
+        </div>
+        
+        <div class="info-group">
+            <span class="info-label">用户名:</span>
+            <span th:text="${user.username}"></span>
+        </div>
+        
+        <div class="info-group">
+            <span class="info-label">姓名:</span>
+            <span th:text="${user.fullName}"></span>
+        </div>
+        
+        <div class="info-group">
+            <span class="info-label">邮箱:</span>
+            <span th:text="${user.email}"></span>
+        </div>
+        
+        <div class="info-group">
+            <span class="info-label">电话:</span>
+            <span th:text="${user.phone}"></span>
+        </div>
+        
+        <div class="info-group">
+            <span class="info-label">地址:</span>
+            <span th:text="${user.address}"></span>
+        </div>
+        
+        <div class="info-group">
+            <span class="info-label">城市:</span>
+            <span th:text="${user.city}"></span>
+        </div>
+        
+        <div class="info-group">
+            <span class="info-label">省份:</span>
+            <span th:text="${user.province}"></span>
+        </div>
+        
+        <div class="info-group">
+            <span class="info-label">邮政编码:</span>
+            <span th:text="${user.postalCode}"></span>
+        </div>
+        
+        <div class="info-group">
+            <span class="info-label">角色:</span>
+            <span th:text="${user.role}"></span>
+        </div>
+        
+        <div class="info-group">
+            <span class="info-label">注册时间:</span>
+            <span th:text="${#dates.format(user.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
+        </div>
+        
+        <div class="info-group">
+            <span class="info-label">更新时间:</span>
+            <span th:text="${user.updatedAt != null ? #dates.format(user.updatedAt, 'yyyy-MM-dd HH:mm:ss') : '未更新'}"></span>
+        </div>
+    </div>
+    
+    <div class="action-links">
+        <a th:href="@{/admin/users/{id}/edit(id=${user.id})}" class="edit-link">编辑用户</a>
+        <a href="/admin/users" class="back-link">返回用户列表</a>
+    </div>
+</body>
+</html>

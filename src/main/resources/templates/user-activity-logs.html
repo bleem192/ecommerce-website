@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的活动日志</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .filter-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .filter-container select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .filter-container button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .logs-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .logs-table th, .logs-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .logs-table th {
+            background-color: #f2f2f2;
+        }
+        .logs-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .activity-type {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .browse { background-color: #2196F3; }
+        .purchase { background-color: #4CAF50; }
+        .view-order { background-color: #FFC107; color: #333; }
+        .login { background-color: #9C27B0; }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>我的活动日志</h1>
+    
+    <div class="filter-container">
+        <form th:action="@{/user/activity-logs}" method="get">
+            <label for="activityType">活动类型：</label>
+            <select id="activityType" name="activityType">
+                <option value="">全部</option>
+                <option value="BROWSE" th:selected="${selectedType == 'BROWSE'}">浏览商品</option>
+                <option value="PURCHASE" th:selected="${selectedType == 'PURCHASE'}">购买商品</option>
+                <option value="VIEW_ORDER" th:selected="${selectedType == 'VIEW_ORDER'}">查看订单</option>
+                <option value="LOGIN" th:selected="${selectedType == 'LOGIN'}">登录</option>
+            </select>
+            <button type="submit">筛选</button>
+        </form>
+    </div>
+    
+    <table class="logs-table">
+        <thead>
+            <tr>
+                <th>时间</th>
+                <th>活动类型</th>
+                <th>详情</th>
+                <th>IP地址</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="log : ${activityLogs}">
+                <td th:text="${#dates.format(log.activityTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td>
+                    <span th:switch="${log.activityType}" class="activity-type">
+                        <span th:case="'BROWSE'" class="browse">浏览</span>
+                        <span th:case="'PURCHASE'" class="purchase">购买</span>
+                        <span th:case="'VIEW_ORDER'" class="view-order">查看订单</span>
+                        <span th:case="'LOGIN'" class="login">登录</span>
+                        <span th:case="*" th:text="${log.activityType}"></span>
+                    </span>
+                </td>
+                <td th:text="${log.details}"></td>
+                <td th:text="${log.ipAddress}"></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <a href="/user/profile" class="back-link">返回个人信息</a>
+</body>
+</html>

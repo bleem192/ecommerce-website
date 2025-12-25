@@ -53,6 +53,7 @@
             <version>8.0.33</version>
             <scope>runtime</scope>
         </dependency>
+
         <!-- Lombok 简化实体类（少写get/set） -->
         <dependency>
             <groupId>org.projectlombok</groupId>

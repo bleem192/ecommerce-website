@@ -10,10 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.time.LocalDateTime;
-import java.util.Collections;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -58,7 +56,47 @@ public class UserService implements UserDetailsService {
         if (user.getCreatedAt() == null) {
             user.setCreatedAt(LocalDateTime.now());
         }
+        if (user.getRole() == null) {
+            user.setRole("USER"); // 默认角色为普通用户
+        }
         return userRepository.save(user);
+    }
+    
+    // 更新用户信息（不包括密码）
+    public User updateUser(Long id, User updatedUser) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("用户不存在：" + id));
+        
+        // 更新用户信息
+        existingUser.setFullName(updatedUser.getFullName());
+        existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setPhone(updatedUser.getPhone());
+        existingUser.setAddress(updatedUser.getAddress());
+        existingUser.setCity(updatedUser.getCity());
+        existingUser.setProvince(updatedUser.getProvince());
+        existingUser.setPostalCode(updatedUser.getPostalCode());
+        existingUser.setUpdatedAt(LocalDateTime.now());
+        
+        return userRepository.save(existingUser);
+    }
+    
+    // 更新用户密码
+    public User updateUserPassword(Long id, String newPassword) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("用户不存在：" + id));
+        
+        existingUser.setPassword(passwordEncoder.encode(newPassword));
+        existingUser.setUpdatedAt(LocalDateTime.now());
+        
+        return userRepository.save(existingUser);
+    }
+    
+    // 删除用户
+    public void deleteUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("用户不存在：" + id));
+        
+        userRepository.delete(user);
     }
     
     // 获取所有用户（用于管理员客户管理）
@@ -66,9 +104,19 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
     
+    // 根据角色获取用户
+    public List<User> getUsersByRole(String role) {
+        return userRepository.findByRole(role);
+    }
+    
     // 根据ID获取用户
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("用户不存在：" + id));
+    }
+    
+    // 根据用户名或邮箱搜索用户
+    public List<User> searchUsers(String keyword) {
+        return userRepository.findByUsernameContainingOrEmailContaining(keyword, keyword);
     }
 }
