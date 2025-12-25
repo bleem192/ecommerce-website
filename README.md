@@ -67,7 +67,7 @@ spring.datasource.password=your-password
 使用Maven构建并运行项目：
 
 ```bash
-mvn spring-boot:run
+mvn spring-boot:run/docker compose up --build -d
 ```
 
 ### 4. 访问网站
@@ -174,7 +174,7 @@ mvn test
 mvn package
 
 # 运行项目
-mvn spring-boot:run
+mvn spring-boot:run/docker compose up --build -d
 ```
 
 ## 部署说明
