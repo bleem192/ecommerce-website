@@ -48,8 +48,20 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("用户不存在"));
     }
 
-    // 保存用户（初始化测试用户用）
+    // 保存用户（注册或初始化测试用户用）
     public User saveUser(User user) {
+        // 检查用户名是否已存在
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new RuntimeException("用户名已存在");
+        }
+        
+        // 检查邮箱是否已存在（如果提供了邮箱）
+        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+            if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+                throw new RuntimeException("邮箱已存在");
+            }
+        }
+        
         // 密码加密（Spring Security 要求密码必须加密）
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         // 设置注册时间

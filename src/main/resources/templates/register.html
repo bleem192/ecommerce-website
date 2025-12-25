@@ -31,11 +31,37 @@
                                 <input type="password" class="form-control" id="password" th:field="*{password}" required>
                             </div>
                             <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">确认密码</label>
+                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                            </div>
+                            <div class="mb-3">
                                 <label for="fullName" class="form-label">姓名</label>
                                 <input type="text" class="form-control" id="fullName" th:field="*{fullName}" required>
                             </div>
+                            <div th:if="${param.passwordMismatch}" class="alert alert-danger">
+                                两次输入的密码不一致！
+                            </div>
+                            <div th:if="${param.usernameExists}" class="alert alert-danger">
+                                用户名已存在！
+                            </div>
+                            <div th:if="${param.emailExists}" class="alert alert-danger">
+                                邮箱已存在！
+                            </div>
                             <button type="submit" class="btn btn-primary w-100">注册</button>
                         </form>
+                        
+                        <script>
+                            // 前端密码验证
+                            document.querySelector('form').addEventListener('submit', function(event) {
+                                const password = document.getElementById('password').value;
+                                const confirmPassword = document.getElementById('confirmPassword').value;
+                                
+                                if (password !== confirmPassword) {
+                                    alert('两次输入的密码不一致！');
+                                    event.preventDefault(); // 阻止表单提交
+                                }
+                            });
+                        </script>
                         <!-- 登录链接 -->
                         <div class="mt-3 text-center">
                             <a href="/login" class="text-decoration-none">已有账号？去登录</a>

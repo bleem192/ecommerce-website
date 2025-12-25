@@ -28,9 +28,24 @@ public class UserController {
 
     // 处理用户注册
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute User user) {
-        userService.saveUser(user);
-        return "redirect:/login?registerSuccess";
+    public String registerUser(@ModelAttribute User user, @RequestParam String confirmPassword) {
+        // 验证密码是否一致
+        if (!user.getPassword().equals(confirmPassword)) {
+            return "redirect:/register?passwordMismatch";
+        }
+        
+        try {
+            userService.saveUser(user);
+            return "redirect:/login?registerSuccess";
+        } catch (RuntimeException e) {
+            if (e.getMessage().equals("用户名已存在")) {
+                return "redirect:/register?usernameExists";
+            } else if (e.getMessage().equals("邮箱已存在")) {
+                return "redirect:/register?emailExists";
+            } else {
+                throw e; // 其他异常继续抛出
+            }
+        }
     }
     
     // 用户个人信息页面
