@@ -1,6 +1,6 @@
 # 阶段1：构建 Jar 包（多阶段构建，减小镜像体积）
-# 使用阿里云Maven镜像加速
-FROM registry.cn-hangzhou.aliyuncs.com/maven:3.8.5-openjdk-8 AS build
+# 使用镜像加速源
+FROM docker.m.daocloud.io/maven:3.8.5-openjdk-8 AS build
 # 设置工作目录
 WORKDIR /app
 # 复制 pom.xml 和源码
@@ -12,8 +12,8 @@ RUN mkdir -p /root/.m2 && echo '<settings xmlns="http://maven.apache.org/SETTING
 RUN mvn clean package -DskipTests
 
 # 阶段2：运行 Jar 包
-# 使用阿里云Eclipse Temurin镜像加速
-FROM registry.cn-hangzhou.aliyuncs.com/eclipse-temurin:8-jdk-alpine
+# 使用镜像加速源
+FROM docker.m.daocloud.io/eclipse-temurin:8-jdk-alpine
 # 设置工作目录
 WORKDIR /app
 # 从构建阶段复制 Jar 包到当前镜像
