@@ -1,34 +1,34 @@
 # 电商网站项目
 
-一个基于Spring Boot的电商网站项目，实现了完整的购买流程和客户管理功能。
+一个基于Spring Boot的完整电商网站项目，实现了从商品浏览到订单管理的全流程功能。
 
 ## 功能特点
 
-### 购买流程
-- 浏览/查询商品
-- 添加商品至购物车
-- 结账付款（简化为填写邮箱）
-- 订单确认和查看
-
-### 客户管理
+### 用户功能
+- 商品列表浏览和关键词搜索
+- 商品详情查看
+- 购物车管理（添加、删除商品）
+- 订单结算（简化为填写邮箱）
+- 订单查看和管理
 - 用户注册和登录
 - 用户信息管理
-- 客户活动日志记录（浏览、购买、登录、订单查看）
 
 ### 管理员功能
-- 商品管理（增删改查）
-- 客户管理
-- 订单管理
-- 活动日志查看
+- 商品管理：添加、编辑、删除商品
+- 订单管理：查看所有订单、更新订单状态
+- 客户管理：查看所有用户、修改用户角色（管理员/普通用户）
+- 销售统计：订单数据统计、销售额统计
+- 用户活动日志：记录和查看用户浏览、购买、登录等行为
 
 ## 技术栈
 
 - **后端框架**：Spring Boot 2.7.18
-- **前端模板**：Thymeleaf
+- **前端模板**：Thymeleaf 3.x
 - **安全认证**：Spring Security
-- **数据库**：MySQL
+- **数据库**：MySQL 8.0+
 - **ORM框架**：Spring Data JPA
 - **构建工具**：Maven
+- **前端框架**：Bootstrap 5.1.3
 - **开发语言**：Java 8
 
 ## 环境要求
@@ -60,6 +60,11 @@ CREATE DATABASE ecommerce;
 spring.datasource.url=jdbc:mysql://localhost:3306/ecommerce?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
 spring.datasource.username=root
 spring.datasource.password=your-password
+
+# JPA配置
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 ```
 
 ### 3. 构建和运行
@@ -82,120 +87,118 @@ docker compose up --build -d
 
 ```
 src/main/java/com/example/ecommerce/
-├── config/             # 配置类
-├── controller/         # 控制器
-├── entity/             # 实体类
-├── repository/         # 数据访问层
-├── service/            # 业务逻辑层
+├── config/                    # 配置类
+│   └── SecurityConfig.java    # Spring Security配置
+├── controller/                # 控制器
+│   ├── AdminController.java           # 管理员功能
+│   ├── CartController.java            # 购物车管理
+│   ├── LoginController.java           # 登录控制器
+│   ├── OrderController.java           # 订单管理
+│   ├── ProductController.java         # 商品管理
+│   ├── UserActivityLogController.java # 用户活动日志
+│   └── UserController.java            # 用户管理
+├── entity/                    # 实体类
+│   ├── CartItem.java         # 购物车商品
+│   ├── Order.java            # 订单
+│   ├── OrderItem.java        # 订单商品
+│   ├── Product.java          # 商品
+│   ├── User.java             # 用户
+│   └── UserActivityLog.java  # 用户活动日志
+├── repository/                # 数据访问层
+│   ├── CartItemRepository.java
+│   ├── OrderItemRepository.java
+│   ├── OrderRepository.java
+│   ├── ProductRepository.java
+│   ├── UserActivityLogRepository.java
+│   └── UserRepository.java
+├── service/                   # 业务逻辑层
+│   ├── CartService.java
+│   ├── OrderService.java
+│   ├── ProductService.java
+│   ├── UserActivityLogService.java
+│   └── UserService.java
 └── EcommerceApplication.java  # 应用入口
 ```
-
-### 主要控制器
-
-- `ProductController`：商品列表、搜索和详情页
-- `CartController`：购物车管理和结账
-- `OrderController`：订单查看和管理
-- `UserController`：用户信息管理
-- `AdminController`：管理员功能
-- `UserActivityLogController`：用户活动日志管理
-
-### 实体类
-
-- `Product`：商品信息
-- `User`：用户信息
-- `CartItem`：购物车商品
-- `Order`：订单信息
-- `OrderItem`：订单商品
-- `UserActivityLog`：用户活动日志
 
 ## 主要功能模块
 
 ### 1. 商品管理
-- 商品列表展示
-- 商品搜索
+- 商品列表展示和搜索
 - 商品详情页
-- 浏览记录日志
+- 商品添加、编辑和删除（管理员）
 
 ### 2. 购物车
 - 添加商品到购物车
-- 购物车商品管理
-- 结账流程
+- 查看购物车
+- 删除购物车商品
+- 结算购物车
 
-### 3. 订单管理
-- 订单创建
-- 订单查看
-- 订单详情
-- 订单记录日志
+### 3. 订单系统
+- 创建订单
+- 查看订单列表
+- 查看订单详情
+- 更新订单状态（管理员）
+- 订单数据统计
 
-### 4. 用户管理
+### 4. 用户系统
 - 用户注册
 - 用户登录
-- 用户信息修改
-- 用户活动日志
+- 用户信息管理
+- 用户角色管理（管理员）
 
 ### 5. 管理员功能
-- 客户管理
-- 商品管理
-- 订单管理
-- 活动日志查看
+- 商品管理页面：`/admin/products`
+- 订单管理页面：`/admin/orders`
+- 客户管理页面：`/admin/customers`
+- 销售统计页面：`/admin/statistics`
 
-## 配置说明
+## 管理功能使用说明
 
-### 数据库配置
+### 角色管理
+在客户管理页面(`/admin/customers`)，管理员可以：
+- 查看所有用户的详细信息
+- 通过下拉菜单修改用户角色（普通用户/管理员）
+- 系统会自动记录角色变更的时间
 
-在`application.properties`中配置MySQL数据库连接：
+### 订单管理
+在订单管理页面(`/admin/orders`)，管理员可以：
+- 查看所有用户的订单列表
+- 点击订单查看详细信息
+- 更新订单状态（待付款/已付款/已发货/已完成/已取消）
 
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/ecommerce?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-spring.datasource.username=root
-spring.datasource.password=your-password
-
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-```
-
-### 安全配置
-
-在`SecurityConfig.java`中配置用户认证和授权规则。
-
-## 开发说明
-
-### 开发工具
-
-- IDE：IntelliJ IDEA 或 Eclipse
-- 数据库工具：MySQL Workbench 或 Navicat
-
-### 构建命令
-
-```bash
-# 编译项目
-mvn compile
-
-# 运行测试
-mvn test
-
-# 打包项目
-mvn package
-
-# 运行项目
-mvn spring-boot:run
-```
+### 商品管理
+在商品管理页面(`/admin/products`)，管理员可以：
+- 查看所有商品列表
+- 添加新商品
+- 编辑现有商品信息
+- 删除不需要的商品
 
 ## 部署说明
 
 ### Docker部署
-
-项目包含Dockerfile和docker-compose.yml文件，可以使用Docker部署：
+项目包含Dockerfile和docker-compose.yml文件，可以使用Docker快速部署：
 
 ```bash
-docker-compose up -d
+docker-compose up --build -d
 ```
 
 ### 传统部署
+1. 打包项目：
+```bash
+mvn package
+```
 
-1. 打包项目：`mvn package`
-2. 将生成的jar文件复制到服务器
-3. 运行：`java -jar ecommerce-1.0.0.jar`
+2. 运行生成的jar文件：
+```bash
+java -jar target/ecommerce-1.0.0.jar
+```
+
+## 安全特性
+
+- 使用Spring Security实现身份认证和授权
+- 密码加密存储（BCrypt）
+- 基于角色的访问控制
+- 防止CSRF攻击
 
 ## 许可证
 
