@@ -121,12 +121,23 @@ public class UserService implements UserDetailsService {
         return userRepository.findByRole(role);
     }
     
+    // 更新用户角色
+    public User updateUserRole(Long id, String role) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("用户不存在：" + id));
+        
+        existingUser.setRole(role);
+        existingUser.setUpdatedAt(LocalDateTime.now());
+        
+        return userRepository.save(existingUser);
+    }
+
     // 根据ID获取用户
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("用户不存在：" + id));
     }
-    
+
     // 根据用户名或邮箱搜索用户
     public List<User> searchUsers(String keyword) {
         return userRepository.findByUsernameContainingOrEmailContaining(keyword, keyword);

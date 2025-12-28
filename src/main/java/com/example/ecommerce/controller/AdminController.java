@@ -110,9 +110,30 @@ public class AdminController {
     // 修改用户角色
     @PostMapping("/customers/change-role/{id}")
     public String changeUserRole(@PathVariable Long id, @RequestParam String role) {
-        User user = userService.getUserById(id);
-        user.setRole(role);
-        userService.saveUser(user);
+        userService.updateUserRole(id, role);
         return "redirect:/admin/customers";
+    }
+    
+    // 订单管理页面
+    @GetMapping("/orders")
+    public String orderManagement(Model model, Authentication authentication) {
+        model.addAttribute("username", authentication.getName());
+        model.addAttribute("orders", orderService.getAllOrders());
+        return "admin/orders";
+    }
+    
+    // 查看订单详情
+    @GetMapping("/orders/detail/{id}")
+    public String viewOrderDetail(@PathVariable Long id, Model model, Authentication authentication) {
+        model.addAttribute("username", authentication.getName());
+        model.addAttribute("order", orderService.getOrderById(id));
+        return "admin/order-detail";
+    }
+    
+    // 更新订单状态
+    @PostMapping("/orders/update-status/{id}")
+    public String updateOrderStatus(@PathVariable Long id, @RequestParam String status) {
+        orderService.updateOrderStatus(id, status);
+        return "redirect:/admin/orders";
     }
 }

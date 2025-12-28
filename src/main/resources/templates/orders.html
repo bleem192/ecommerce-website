@@ -14,6 +14,18 @@
                 <a class="nav-link" href="/products">商品列表</a>
                 <a class="nav-link" href="/cart">我的购物车</a>
                 <a class="nav-link active" href="/orders">我的订单</a>
+                <!-- 管理员专用菜单 -->
+                <div sec:authorize="hasRole('ADMIN')" class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        管理后台
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                        <li><a class="dropdown-item" href="/admin/products">商品管理</a></li>
+                        <li><a class="dropdown-item" href="/admin/orders">订单管理</a></li>
+                        <li><a class="dropdown-item" href="/admin/statistics">销售统计</a></li>
+                        <li><a class="dropdown-item" href="/admin/customers">客户管理</a></li>
+                    </ul>
+                </div>
                 <span class="nav-link text-light">欢迎，[[${username}]]</span>
                 <a class="nav-link text-light" href="/logout">退出登录</a>
             </div>
